@@ -1,5 +1,4 @@
-# https://hub.docker.com/r/phpswoole/swoole
-FROM phpswoole/swoole:php8.1-alpine
+FROM php:8.1-cli-alpine
 
 RUN apk --update add \
         wget \
@@ -41,22 +40,18 @@ RUN apk --update add \
         zip \
         intl \
         gettext \
-        soap \
-        sockets \
-        xsl
+        soap
+RUN docker-php-ext-install \
+        tokenizer \
+        sockets
 
-RUN docker-php-ext-configure gd --with-freetype=/usr/lib/ --with-jpeg=/usr/lib/ && \
+RUN docker-php-ext-install xsl && \
+    docker-php-ext-configure gd --with-freetype=/usr/lib/ --with-jpeg=/usr/lib/ && \
     docker-php-ext-install gd && \
-    docker-php-ext-enable redis
-
-# RUN docker-php-ext-install tokenizer
-
-RUN rm -rf /tmp/pear && \
+    docker-php-ext-enable redis && \
+    rm -rf /tmp/pear && \
     rm /var/cache/apk/*
 
 WORKDIR /var/www/html
 
-ENTRYPOINT ["php", "-d", "variables_order=EGPCS", "artisan", "octane:start", "--server=swoole", "--host=0.0.0.0", "--port=80"]
-
-EXPOSE 80
-
+ENTRYPOINT ["php", "-a"]
