@@ -42,7 +42,6 @@ RUN apk --update add \
         gettext \
         soap
 RUN docker-php-ext-install \
-        tokenizer \
         sockets
 
 RUN docker-php-ext-install xsl && \
